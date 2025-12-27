@@ -10,40 +10,36 @@ class ArtistController extends Controller
 {
     protected DeezerService $deezerService;
 
-    // Inject DeezerService dependency
     public function __construct(DeezerService $deezerService)
     {
         $this->deezerService = $deezerService;
     }
 
-    /**
-     * Search artists based on query param.
-     */
     public function index(Request $request): JsonResponse
     {
         $query = $request->input('q');
+        $limit = $request->input('limit', 15); // Padrão 15
+        $index = $request->input('index', 0);  // Padrão 0
 
         if (!$query) {
             return response()->json(['data' => []], 200);
         }
 
-        $result = $this->deezerService->searchArtists($query);
+        $result = $this->deezerService->searchArtists($query, $limit, $index);
 
         return response()->json($result);
     }
 
-    /**
-     * Get trending artists for the homepage.
-     */
-    public function trending(): JsonResponse
+    public function trending(Request $request): JsonResponse
     {
-        $result = $this->deezerService->getTrendingArtists();
+        $limit = $request->input('limit', 15);
+        $index = $request->input('index', 0);
+        $genreId = $request->input('genre_id', 0); // Padrão 0 (Todos)
+
+        $result = $this->deezerService->getTrendingArtists($limit, $index, $genreId);
         return response()->json($result);
     }
 
-    /**
-     * Get details of a specific artist.
-     */
     public function show(string $id): JsonResponse
     {
         $result = $this->deezerService->getArtist($id);

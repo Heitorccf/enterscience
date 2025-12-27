@@ -3,45 +3,40 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\Response;
 
 class DeezerService
 {
     protected string $baseUrl = 'https://api.deezer.com';
 
     /**
-     * Search for artists by name.
+     * Search for artists by name with pagination.
      */
-    public function searchArtists(string $query): array
+    public function searchArtists(string $query, int $limit = 15, int $index = 0): array
     {
-        // Fetch artists from Deezer search endpoint
         $response = Http::get("{$this->baseUrl}/search/artist", [
             'q' => $query,
-            'limit' => 12
+            'limit' => $limit,
+            'index' => $index // Define o ponto de partida (offset)
         ]);
 
         return $response->json();
     }
 
-    /**
-     * Get specific artist details.
-     */
     public function getArtist(string $id): array
     {
-        // Fetch artist details by ID
         $response = Http::get("{$this->baseUrl}/artist/{$id}");
-        
         return $response->json();
     }
 
     /**
-     * Get trending artists (using Chart endpoint).
+     * Get trending artists with pagination.
      */
-    public function getTrendingArtists(): array
+    public function getTrendingArtists(int $limit = 15, int $index = 0, int $genreId = 0): array
     {
-        // Fetch top artists from Deezer charts
-        $response = Http::get("{$this->baseUrl}/chart/0/artists", [
-            'limit' => 12
+        // A Deezer usa /chart/{genre_id}/artists
+        $response = Http::get("{$this->baseUrl}/chart/{$genreId}/artists", [
+            'limit' => $limit,
+            'index' => $index
         ]);
 
         return $response->json();
