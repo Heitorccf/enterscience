@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Estilização básica para o fundo escuro (opcional, mas ajuda) */
+body {
+  background-color: #121212;
+  color: #ffffff;
+}
