@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend - Next.js
 
-## Getting Started
+Interface para busca de artistas e gestão de contratações. Stack: Next.js 14, TypeScript, Tailwind CSS.
 
-First, run the development server:
+## Requisitos
+
+Backend Laravel rodando em `http://localhost:8000`
+
+## Instalação
+
+```bash
+cd frontend
+npm install
+```
+
+## Configuração
+
+Crie `.env.local` na raiz do frontend:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+```
+
+Se não configurado, usa `http://localhost:8000` por padrão.
+
+## Execução
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplicação disponível em: `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Stack Tecnológica
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Next.js 14 (Pages Router)
+- TypeScript
+- Tailwind CSS v3
+- Axios (HTTP client)
+- React Hook Form (validação)
+- React Hot Toast (notificações)
+- Lucide React (ícones)
+- Framer Motion (animações)
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+- Busca em tempo real com debounce
+- Filtros por gênero musical
+- Scroll infinito com paginação
+- Formulário com máscara de moeda (R$)
+- Date picker nativo
+- Design responsivo (mobile-first)
+- Loading states e feedbacks visuais
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estrutura de Páginas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+pages/
+├── index.tsx          # Homepage - busca e trending
+├── booking/
+│   └── [artistId].tsx # Formulário de contratação
+└── history.tsx        # Histórico de contratações
+```
 
-## Deploy on Vercel
+## Build para Produção
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm start
+```

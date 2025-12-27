@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 import api from '@/services/api';
 import { Artist } from '@/types';
 import ArtistCard from '@/components/ArtistCard';
 import { Search, Sparkles, Filter, Music4, Zap, Mic2, Drum } from 'lucide-react';
 import clsx from 'clsx';
 
-// Mapeamento de Gêneros da Deezer (IDs reais aproximados)
+// Mapeamento de Gêneros da Deezer
 const GENRES = [
     { id: 0, name: 'Tudo', icon: Sparkles },
     { id: 132, name: 'Pop', icon: Zap },
@@ -32,7 +33,6 @@ export default function Home() {
             const currentCount = resetList ? 0 : artists.length;
             let endpoint = '';
 
-            // Lógica: Se tem busca textual, usa search. Se não, usa Trending (com filtro de gênero)
             if (query) {
                 endpoint = `/artists/search?q=${query}&index=${currentCount}&limit=15`;
             } else {
@@ -47,6 +47,7 @@ export default function Home() {
             } else {
                 setArtists(prev => [...prev, ...newData]);
             }
+            
             setHasMore(newData.length >= 15);
 
         } catch (error) {
@@ -56,17 +57,15 @@ export default function Home() {
         }
     }, [artists.length]);
 
-    // Inicialização
     useEffect(() => {
         fetchArtists(true, '', 0);
-    }, []);
+    }, []); 
 
-    // Handler de Busca
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             if (searchTerm.trim()) {
                 setIsSearching(true);
-                setSelectedGenre(0); // Reseta gênero ao buscar texto
+                setSelectedGenre(0); 
                 fetchArtists(true, searchTerm);
             } else if (searchTerm === '' && isSearching) {
                 setIsSearching(false);
@@ -76,7 +75,6 @@ export default function Home() {
         return () => clearTimeout(delayDebounceFn);
     }, [searchTerm]);
 
-    // Handler de Gênero
     const handleGenreClick = (id: number) => {
         if (isSearching) {
             setSearchTerm('');
@@ -103,8 +101,20 @@ export default function Home() {
             </div>
 
             <div className="relative z-10">
+                
+                {/* --- MENU DE NAVEGAÇÃO --- */}
+                <nav className="flex justify-between items-center px-6 lg:px-12 py-6 max-w-7xl mx-auto">
+                    <div className="font-bold text-xl tracking-tighter">
+                        Enter<span className="text-primary">Science</span>
+                    </div>
+                    <Link href="/history" className="group flex items-center gap-2 px-5 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-sm font-medium">
+                        <span className="group-hover:text-primary transition-colors">Meus Shows</span>
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                    </Link>
+                </nav>
+
                 {/* Hero Section */}
-                <header className="pt-16 pb-12 px-6 lg:px-12 max-w-7xl mx-auto">
+                <header className="pt-8 pb-12 px-6 lg:px-12 max-w-7xl mx-auto">
                     <div className="flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="max-w-2xl">
                             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
@@ -126,7 +136,7 @@ export default function Home() {
                                     <Search className="ml-4 text-gray-400" size={20} />
                                     <input
                                         type="text"
-                                        className="w-full bg-transparent border-none focus:ring-0 text-white placeholder-gray-500 px-4 py-3 text-base"
+                                        className="w-full bg-transparent border-none focus:ring-0 text-white placeholder-gray-500 px-4 py-3 text-base outline-none"
                                         placeholder="Buscar artista..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -141,9 +151,10 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Genre Filters */}
-                    <div className="mt-16 overflow-x-auto pb-4 scrollbar-hide">
-                        <div className="flex space-x-3">
+                    {/* Genre Filters - CORRIGIDO O CORTE DOS BOTÕES */}
+                    {/* Adicionado padding vertical (py-8) e horizontal (px-2) para a sombra não cortar */}
+                    <div className="mt-12 w-full overflow-x-auto py-8 px-2 scrollbar-hide">
+                        <div className="flex space-x-3 items-center min-w-max">
                             {GENRES.map((genre) => {
                                 const Icon = genre.icon;
                                 const isActive = selectedGenre === genre.id;
@@ -154,7 +165,7 @@ export default function Home() {
                                         className={clsx(
                                             "flex items-center space-x-2 px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 whitespace-nowrap border",
                                             isActive 
-                                                ? "bg-primary text-dark border-primary shadow-[0_0_20px_rgba(29,185,84,0.4)] scale-105" 
+                                                ? "bg-primary text-dark border-primary shadow-[0_0_25px_rgba(29,185,84,0.5)] scale-110 translate-y-[-2px] z-10" 
                                                 : "bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/30"
                                         )}
                                     >
@@ -185,14 +196,14 @@ export default function Home() {
                             <p className="text-sm mt-2">Tente buscar por outro termo ou gênero.</p>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-6 gap-y-10">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-x-6 gap-y-10">
                             {artists.map((artist, index) => (
                                 <ArtistCard key={`${artist.id}-${index}`} artist={artist} />
                             ))}
                         </div>
                     )}
                     
-                    {/* Botão Carregar Mais - Estilo Glass */}
+                    {/* Botão Carregar Mais */}
                     {artists.length > 0 && hasMore && (
                         <div className="mt-20 flex justify-center">
                             <button

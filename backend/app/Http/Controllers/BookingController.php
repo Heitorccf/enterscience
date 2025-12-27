@@ -3,45 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Http\Requests\StoreBookingRequest;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class BookingController extends Controller
 {
-    /**
-     * List all bookings with pagination.
-     */
+    // Listar histórico (GET)
     public function index(Request $request): JsonResponse
     {
-        // Filter by artist or contractor if search query exists
         $query = Booking::query();
 
+        // Filtro de busca (Search)
         if ($search = $request->input('q')) {
-            $query->where('artist_name', 'like', "%{$search}%")
+            $query->where(function ($q) use ($search) {
+                $q->where('artist_name', 'like', "%{$search}%")
                   ->orWhere('contractor_name', 'like', "%{$search}%");
+            });
         }
 
-        // Return paginated results, latest first
-        $bookings = $query->latest()->paginate(10);
+        // Ordenar por data de criação (mais recentes primeiro)
+        $bookings = $query->orderBy('created_at', 'desc')->paginate(9);
 
         return response()->json($bookings);
     }
 
-    /**
-     * Store a new booking in the database.
-     */
-    public function store(StoreBookingRequest $request): JsonResponse
+    // Salvar nova contratação (POST)
+    public function store(Request $request): JsonResponse
     {
-        // Validated data comes from StoreBookingRequest
-        $data = $request->validated();
+        // Validação dos dados vindos do Frontend
+        $validated = $request->validate([
+            'contractor_name' => 'required|string|max:255',
+            'artist_id' => 'required|string',
+            'artist_name' => 'required|string',
+            'artist_image_url' => 'required|string',
+            'event_date' => 'required|date',
+            'cache_amount' => 'required|numeric',
+            'event_address' => 'nullable|string'
+        ]);
 
-        // Create booking record
-        $booking = Booking::create($data);
+        // Criação no Banco
+        $booking = Booking::create($validated);
 
-        return response()->json([
-            'message' => 'Booking created successfully',
-            'data' => $booking
-        ], 201);
+        return response()->json($booking, 201);
     }
 }
