@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Services;
-
 use Illuminate\Support\Facades\Http;
 
 class DeezerService
@@ -16,7 +14,7 @@ class DeezerService
         $response = Http::get("{$this->baseUrl}/search/artist", [
             'q' => $query,
             'limit' => $limit,
-            'index' => $index // Define o ponto de partida (offset)
+            'index' => $index // Offset for pagination
         ]);
 
         return $response->json();
@@ -33,7 +31,7 @@ class DeezerService
      */
     public function getTrendingArtists(int $limit = 15, int $index = 0, int $genreId = 0): array
     {
-        // A Deezer usa /chart/{genre_id}/artists
+        // Deezer uses /chart/{genre_id}/artists endpoint
         $response = Http::get("{$this->baseUrl}/chart/{$genreId}/artists", [
             'limit' => $limit,
             'index' => $index

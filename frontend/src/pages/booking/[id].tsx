@@ -66,7 +66,6 @@ export default function BookingPage() {
 
         setSubmitting(true);
         try {
-            // Limpeza de espaços (Trim) e formatação de moeda
             const cleanName = data.contractor_name.trim();
             const cleanAddress = data.event_address.trim();
             const cleanCache = data.cache_amount 
@@ -142,7 +141,7 @@ export default function BookingPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                     
-                    {/* Detalhes do Artista */}
+                    {/* Artist Details */}
                     <div className="lg:col-span-4 space-y-6">
                         <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                              {artist?.picture_medium && (
@@ -175,7 +174,7 @@ export default function BookingPage() {
                         </div>
                     </div>
 
-                    {/* Formulário */}
+                    {/* Booking Form */}
                     <div className="lg:col-span-8">
                         <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-10 backdrop-blur-md shadow-2xl">
                             <h2 className="text-2xl font-bold mb-6 flex items-center">
@@ -187,7 +186,7 @@ export default function BookingPage() {
 
                             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                 
-                                {/* Nome */}
+                                {/* Full Name */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">Seu Nome Completo *</label>
                                     <div className="relative">
@@ -207,7 +206,7 @@ export default function BookingPage() {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     
-                                    {/* Data do Evento - CORRIGIDO */}
+                                    {/* Event Date */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Data do Evento *</label>
                                         <div className="relative">
@@ -228,7 +227,7 @@ export default function BookingPage() {
                                         {errors.event_date && <span className="text-red-500 text-sm mt-1">{errors.event_date.message}</span>}
                                     </div>
 
-                                    {/* Cachê */}
+                                    {/* Budget Amount */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Proposta de Cachê (R$)</label>
                                         <div className="relative">
@@ -247,7 +246,7 @@ export default function BookingPage() {
                                     </div>
                                 </div>
 
-                                {/* Endereço */}
+                                {/* Event Address */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-400 mb-2">Endereço do Local</label>
                                     <div className="relative">

@@ -7,7 +7,7 @@ import ArtistCard from '@/components/ArtistCard';
 import { Search, Sparkles, Filter, Music4, Zap, Mic2, Drum } from 'lucide-react';
 import clsx from 'clsx';
 
-// Mapeamento de Gêneros da Deezer
+// Deezer genre mapping
 const GENRES = [
     { id: 0, name: 'Tudo', icon: Sparkles },
     { id: 132, name: 'Pop', icon: Zap },
@@ -22,7 +22,7 @@ const GENRES = [
 export default function Home() {
     const [artists, setArtists] = useState<Artist[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedGenre, setSelectedGenre] = useState(0); // 0 = Tudo
+    const [selectedGenre, setSelectedGenre] = useState(0); // 0 = all genres
     const [loading, setLoading] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -71,7 +71,7 @@ export default function Home() {
                 setIsSearching(false);
                 fetchArtists(true, '', selectedGenre);
             }
-        }, 500);
+        }, 500); // Debounce delay
         return () => clearTimeout(delayDebounceFn);
     }, [searchTerm]);
 
@@ -102,7 +102,7 @@ export default function Home() {
 
             <div className="relative z-10">
                 
-                {/* --- MENU DE NAVEGAÇÃO --- */}
+                {/* Navigation Menu */}
                 <nav className="flex justify-between items-center px-6 lg:px-12 py-6 max-w-7xl mx-auto">
                     <div className="font-bold text-xl tracking-tighter">
                         Enter<span className="text-primary">Science</span>
@@ -128,7 +128,7 @@ export default function Home() {
                             </p>
                         </div>
                         
-                        {/* Search Bar Moderno */}
+                        {/* Search Bar */}
                         <div className="w-full md:w-auto min-w-[350px]">
                             <div className="relative group">
                                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-blue-600 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
@@ -151,8 +151,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Genre Filters - CORRIGIDO O CORTE DOS BOTÕES */}
-                    {/* Adicionado padding vertical (py-8) e horizontal (px-2) para a sombra não cortar */}
+                    {/* Genre Filters - padding added to prevent shadow clipping */}
                     <div className="mt-12 w-full overflow-x-auto py-8 px-2 scrollbar-hide">
                         <div className="flex space-x-3 items-center min-w-max">
                             {GENRES.map((genre) => {
@@ -203,7 +202,7 @@ export default function Home() {
                         </div>
                     )}
                     
-                    {/* Botão Carregar Mais */}
+                    {/* Load More Button */}
                     {artists.length > 0 && hasMore && (
                         <div className="mt-20 flex justify-center">
                             <button
