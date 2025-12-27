@@ -13,6 +13,19 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            // Contractor information
+            $table->string('contractor_name');
+            
+            // Artist information from Deezer API
+            $table->string('artist_id'); // Keeping as string to be safe with external APIs
+            $table->string('artist_name');
+            $table->text('artist_image_url')->nullable();
+            
+            // Event details
+            $table->decimal('cache_amount', 10, 2)->nullable();
+            $table->date('event_date');
+            $table->text('event_address')->nullable();
+            
             $table->timestamps();
         });
     }
