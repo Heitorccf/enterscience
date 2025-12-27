@@ -14,8 +14,10 @@ Sistema de contratação de artistas com integração à API Deezer. Stack: Lara
 
 Clone o repositório:
 
-```bash
+```
 git clone https://github.com/Heitorccf/enterscience.git
+```
+```
 cd enterscience
 ```
 
@@ -24,12 +26,14 @@ cd enterscience
 Execute backend e frontend simultaneamente em terminais separados:
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd backend
 # Siga instruções em backend/README.md
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 # Siga instruções em frontend/README.md
@@ -43,20 +47,18 @@ enterscience/
 ├── frontend/    # Next.js App
 └── README.md
 ```
-```
 
 ---
 
-# backend/README.md
+### 2. Arquivo: `backend/README.md`
 
-```markdown
 # Backend - Laravel API
 
 API RESTful para busca de artistas (Deezer) e gestão de contratações.
 
 ## Instalação
 
-```bash
+```
 cd backend
 composer install
 cp .env.example .env
@@ -103,21 +105,20 @@ Servidor disponível em: `http://localhost:8000`
 - `GET /api/artists/{id}` - Detalhes do artista
 - `GET /api/bookings` - Lista contratações
 - `POST /api/bookings` - Cria contratação
-```
 
 ---
 
-# frontend/README.md
+### 3. Arquivo: `frontend/README.md`
 
-```markdown
 # Frontend - Next.js
 
 Interface para busca de artistas e gestão de contratações.
 
 ## Instalação
-
-```bash
+```
 cd frontend
+```
+```
 npm install
 ```
 
