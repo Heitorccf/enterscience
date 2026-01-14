@@ -1,144 +1,177 @@
-# EnterScience
+# EnterScience - Teste Técnico
 
-Sistema de contratação de artistas com integração à API Deezer.
-Stack: Laravel 11 (Backend) e Next.js 14 (Frontend).
+Este projeto consiste em uma aplicação Fullstack (Laravel + Next.js) que consome a API da Deezer para listar artistas e permite simular a contratação de shows.
 
-## Requisitos
+## Como Rodar o Projeto
 
-- Git
-- Node.js 18+
-- PHP 8.2+
-- Composer
-- MySQL ou MariaDB
+Você pode rodar este projeto de duas formas:
 
-## Instalação
+1. **Via Docker (Recomendado):** Ambiente isolado e pré-configurado.
+2. **Localmente:** Usando PHP e Node.js instalados na sua máquina.
 
-### 1. Clonar o Repositório
+---
 
+### Pré-requisitos
+
+* Git
+* Docker e Docker Compose (para opção Docker)
+* PHP 8.2+, Composer, Node.js e MySQL (para opção Local)
+
+---
+
+### Configuração Inicial (Backend)
+
+Independentemente do método escolhido, faça o setup inicial:
+
+1. Clone o repositório:
 ```bash
-git clone https://github.com/Heitorccf/enterscience.git
+git clone <url-do-repositorio>
 cd enterscience
+
 ```
 
-### 2. Configurar Backend
 
+2. Entre na pasta do backend:
 ```bash
 cd backend
-composer install
-```
-
-Crie o arquivo `.env` na pasta `backend` com o seguinte conteúdo:
 
 ```
-APP_NAME=EnterScience
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_URL=http://localhost:8000
 
+
+3. Copie o arquivo de exemplo de ambiente:
+```bash
+cp .env.example .env
+
+```
+
+
+
+---
+
+### Opção 1: Rodando com Docker (Recomendado)
+
+Nesta opção, tanto o backend quanto o banco de dados rodam dentro de containers.
+
+1. **Configure o `.env` do Backend:**
+Abra o arquivo `backend/.env` e garanta que as configurações de banco sejam estas (atenção ao HOST e PORT):
+```ini
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=db
 DB_PORT=3306
 DB_DATABASE=enterscience_db
 DB_USERNAME=enterscience_user
 DB_PASSWORD=enterscience_pass
 
-BROADCAST_DRIVER=log
-CACHE_DRIVER=file
-FILESYSTEM_DISK=local
-QUEUE_CONNECTION=sync
+CACHE_STORE=file
 SESSION_DRIVER=file
-SESSION_LIFETIME=120
+
 ```
 
-Gere a chave de segurança:
 
+> **Nota:** Dentro do Docker, o host é o nome do serviço (`db`) e a porta é a interna (`3306`).
+
+
+2. **Suba os containers:**
+Volte para a raiz do projeto (onde está o `docker-compose.yml`) e execute:
 ```bash
-php artisan key:generate
+docker-compose up -d
+
 ```
 
-### 3. Configurar Banco de Dados
 
-Acesse o MySQL como superusuário:
-
+3. **Instale as dependências e rode as migrations:**
+Execute estes comandos para preparar o Laravel dentro do container:
 ```bash
-sudo mysql
-```
-
-Execute os comandos SQL para criar o banco e usuário:
-
-```sql
-CREATE DATABASE enterscience_db;
-CREATE USER 'enterscience_user'@'localhost' IDENTIFIED BY 'enterscience_pass';
-GRANT ALL PRIVILEGES ON enterscience_db.* TO 'enterscience_user'@'localhost';
-FLUSH PRIVILEGES;
-EXIT;
-```
-
-Nota: Se preferir usar senha diferente, altere `enterscience_pass` no SQL acima e no arquivo `.env`.
-
-Execute as migrations:
-
-```bash
-php artisan migrate
-```
-
-### 4. Configurar Frontend
-
-```bash
-cd ../frontend
-npm install
-```
-
-Opcionalmente, crie o arquivo `.env.local` na pasta `frontend`:
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
+
+
+4. O Backend estará rodando em: `http://localhost:8000`
+
+---
+
+### Opção 2: Rodando Localmente (Sem Docker)
+
+Use esta opção se preferir rodar o servidor PHP e o MySQL diretamente na sua máquina.
+
+1. **Configure o `.env` do Backend:**
+Abra o arquivo `backend/.env`. Aqui a configuração muda dependendo de onde está seu banco de dados:
+* **Cenário A:** Você tem o MySQL instalado no PC (XAMPP, Workbench, etc) na porta padrão:
+```ini
+DB_HOST=127.0.0.1
+DB_PORT=3306
+
 ```
 
-## Execução
 
-Execute backend e frontend simultaneamente em terminais separados.
+* **Cenário B:** Você quer rodar o PHP localmente, mas usar o banco do Docker:
+```ini
+DB_HOST=127.0.0.1
+DB_PORT=3307
 
-**Terminal 1 - Backend:**
+```
 
+
+*(A porta 3307 é exposta pelo Docker Compose para acesso externo).*
+
+
+2. **Instale as dependências:**
 ```bash
 cd backend
-php artisan serve
+composer install
+php artisan key:generate
+php artisan migrate --seed
+
 ```
 
-API disponível em: `http://localhost:8000`
 
-**Terminal 2 - Frontend:**
+3. **Inicie o servidor:**
+```bash
+php artisan serve
 
+```
+
+
+
+---
+
+### Frontend (Next.js)
+
+O Frontend roda fora do Docker (ou pode ser configurado via Dockerfile na pasta frontend, se preferir). Para rodar localmente:
+
+1. Entre na pasta do frontend:
 ```bash
 cd frontend
+
+```
+
+
+2. Instale as dependências e rode o projeto:
+```bash
+npm install
 npm run dev
-```
-
-Aplicação disponível em: `http://localhost:3000`
-
-## Estrutura
 
 ```
-enterscience/
-├── backend/     # Laravel 11 API
-├── frontend/    # Next.js 14 App
-└── README.md
-```
 
-## Endpoints da API
 
-- `GET /api/artists/trending` - Artistas em alta
-- `GET /api/artists/search?q={query}` - Busca artistas por nome
-- `GET /api/artists/{id}` - Detalhes do artista
-- `GET /api/bookings` - Lista contratações
-- `POST /api/bookings` - Cria contratação
+3. Acesse em: `http://localhost:3000`
 
-## Funcionalidades
+---
 
-- Busca de artistas em tempo real
-- Filtros por gênero musical
-- Formulário de contratação com validação
-- Histórico de contratações
-- Design responsivo com Tailwind CSS
+### Solução de Problemas Comuns
+
+**Erro de conexão com o banco (Connection Refused/Timeout):**
+
+* Se estiver usando **Docker**, verifique se `DB_HOST=db`.
+* Se estiver rodando **Localmente** (php artisan serve), verifique se `DB_HOST=127.0.0.1`.
+* Verifique se a `DB_PORT` está correta conforme a tabela acima.
+
+**Erro de Sessão/Cache:**
+Se o sistema estiver lento ou travando, garanta que no `.env` esteja configurado para usar arquivos, evitando dependência excessiva do banco em ambiente de desenvolvimento:
+
+```ini
+SESSION_DRIVER=file
+CACHE_STORE=file
