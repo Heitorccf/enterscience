@@ -1,13 +1,15 @@
 import React from 'react';
 import { Booking } from '@/types';
 import Image from 'next/image';
-import { Calendar, MapPin, DollarSign, User, Music } from 'lucide-react';
+import Link from 'next/link';
+import { Calendar, MapPin, DollarSign, User, Music, Edit2, Trash2 } from 'lucide-react';
 
 interface BookingCardProps {
     booking: Booking;
+    onDelete?: (id: number) => void;
 }
 
-export default function BookingCard({ booking }: BookingCardProps) {
+export default function BookingCard({ booking, onDelete }: BookingCardProps) {
     // Format Date to PT-BR
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -26,9 +28,9 @@ export default function BookingCard({ booking }: BookingCardProps) {
     };
 
     return (
-        <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 shadow-lg">
+        <div className="group relative bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 flex flex-col shadow-lg">
             {/* Header com Imagem do Artista */}
-            <div className="relative h-24 bg-gray-800">
+            <div className="relative h-28 bg-gray-800">
                 {booking.artist_image_url ? (
                     <Image 
                         src={booking.artist_image_url} 
@@ -50,7 +52,7 @@ export default function BookingCard({ booking }: BookingCardProps) {
             </div>
 
             {/* Corpo do Card */}
-            <div className="p-5 space-y-4">
+            <div className="p-5 space-y-4 flex-grow">
                 
                 {/* Contratante */}
                 <div className="flex items-start">
@@ -90,6 +92,24 @@ export default function BookingCard({ booking }: BookingCardProps) {
                             <p className="text-gray-300 text-sm line-clamp-2">{booking.event_address}</p>
                         </div>
                     </div>
+                )}
+            </div>
+
+            {/* Botões de Ação */}
+            <div className="px-5 pb-5 pt-2 flex gap-3 mt-auto">
+                <Link 
+                    href={`/booking/edit/${booking.id}`}
+                    className="flex-1 flex items-center justify-center py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                >
+                    <Edit2 size={16} className="mr-2" /> Editar
+                </Link>
+                {onDelete && (
+                    <button 
+                        onClick={() => onDelete(booking.id)}
+                        className="flex-1 flex items-center justify-center py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 transition-colors"
+                    >
+                        <Trash2 size={16} className="mr-2" /> Excluir
+                    </button>
                 )}
             </div>
             

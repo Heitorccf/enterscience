@@ -37,4 +37,34 @@ class BookingController extends Controller
         $booking = Booking::create($validated);
         return response()->json($booking, 201);
     }
+
+    public function show($id): JsonResponse
+    {
+        $booking = Booking::findOrFail($id);
+        return response()->json($booking);
+    }
+
+    public function update(Request $request, $id): JsonResponse
+    {
+        $booking = Booking::findOrFail($id);
+
+        $validated = $request->validate([
+            'contractor_name' => 'sometimes|required|string|max:255',
+            'event_date' => 'sometimes|required|date',
+            'cache_amount' => 'sometimes|required|numeric',
+            'event_address' => 'nullable|string'
+        ]);
+
+        $booking->update($validated);
+
+        return response()->json($booking);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
+
+        return response()->json(null, 204);
+    }
 }

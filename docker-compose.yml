@@ -1,0 +1,74 @@
+services:
+  # Container do Laravel (Processamento PHP)
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: enterscience-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www:z
+    depends_on:
+      - db
+    networks:
+      - enterscience-network
+
+  # Container do Nginx (Servidor Web para o Laravel)
+  nginx:
+    image: nginx:alpine
+    container_name: enterscience-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./backend:/var/www:z
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:z
+    depends_on:
+      - app
+    networks:
+      - enterscience-network
+
+  # Container do Banco de Dados (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: enterscience-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-enterscience}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_USER: ${DB_USERNAME:-laravel}
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - enterscience-network
+
+  # Container do Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: enterscience-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app:z
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - nginx
+    networks:
+      - enterscience-network
+
+networks:
+  enterscience-network:
+    driver: bridge
+
+volumes:
+  dbdata:

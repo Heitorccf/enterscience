@@ -5,6 +5,7 @@ import { ArrowLeft, Search, Filter, CalendarClock, ChevronLeft, ChevronRight } f
 import api from '@/services/api';
 import { Booking, PaginatedResponse } from '@/types';
 import BookingCard from '@/components/BookingCard';
+import toast from 'react-hot-toast';
 
 export default function HistoryPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -56,6 +57,20 @@ export default function HistoryPage() {
         if (newPage >= 1 && newPage <= lastPage) {
             fetchBookings(newPage, searchTerm);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if (!window.confirm("Tem certeza que deseja excluir este agendamento?")) return;
+
+        try {
+            await api.delete(`/bookings/${id}`);
+            toast.success("Show excluído com sucesso!");
+            // Recarregar a lista mantendo a página atual se possível
+            fetchBookings(currentPage, searchTerm);
+        } catch (error) {
+            console.error("Erro ao excluir", error);
+            toast.error("Erro ao excluir o show.");
         }
     };
 
@@ -121,7 +136,11 @@ export default function HistoryPage() {
                     <>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                             {bookings.map((booking) => (
-                                <BookingCard key={booking.id} booking={booking} />
+                                <BookingCard 
+                                    key={booking.id} 
+                                    booking={booking} 
+                                    onDelete={handleDelete}
+                                />
                             ))}
                         </div>
 
