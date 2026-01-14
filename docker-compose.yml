@@ -1,5 +1,9 @@
+version: '3.8'
+
 services:
-  # Container do Laravel (Processamento PHP)
+  # ==========================================
+  # APP: Backend Laravel (Processamento PHP)
+  # ==========================================
   app:
     build:
       context: ./backend
@@ -7,14 +11,20 @@ services:
     container_name: enterscience-app
     restart: unless-stopped
     working_dir: /var/www
+    # Configuração de DNS obrigatória para acessar APIs externas (Deezer) no Fedora
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - ./backend:/var/www:z
-    depends_on:
-      - db
     networks:
       - enterscience-network
+    depends_on:
+      - db
 
-  # Container do Nginx (Servidor Web para o Laravel)
+  # ==========================================
+  # NGINX: Servidor Web (Porta de Entrada)
+  # ==========================================
   nginx:
     image: nginx:alpine
     container_name: enterscience-nginx
@@ -24,29 +34,35 @@ services:
     volumes:
       - ./backend:/var/www:z
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:z
-    depends_on:
-      - app
     networks:
       - enterscience-network
+    depends_on:
+      - app
 
-  # Container do Banco de Dados (MySQL)
+  # ==========================================
+  # DB: Banco de Dados MySQL
+  # ==========================================
   db:
     image: mysql:8.0
     container_name: enterscience-db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-enterscience}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
-      MYSQL_USER: ${DB_USERNAME:-laravel}
+      # Definindo credenciais explícitas para garantir conexão com o Laravel
+      MYSQL_DATABASE: enterscience_db
+      MYSQL_USER: enterscience_user
+      MYSQL_PASSWORD: enterscience_pass
+      MYSQL_ROOT_PASSWORD: root
     ports:
+      # Mapeia a porta 3306 do container para a 3307 do host (evita conflito)
       - "3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
     networks:
       - enterscience-network
 
-  # Container do Frontend (Next.js)
+  # ==========================================
+  # FRONTEND: Next.js
+  # ==========================================
   frontend:
     build:
       context: ./frontend
@@ -55,17 +71,25 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    # DNS também no frontend caso haja requisições server-side
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - ./frontend:/app:z
+      # O volume abaixo cria uma "exceção" para não sobrescrever a pasta node_modules do container
       - /app/node_modules
       - /app/.next
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
     depends_on:
       - nginx
     networks:
       - enterscience-network
 
+# ==========================================
+# REDES E VOLUMES
+# ==========================================
 networks:
   enterscience-network:
     driver: bridge
